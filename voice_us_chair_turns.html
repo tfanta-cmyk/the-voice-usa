@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Voice: Songs & Artists With the Most Chair Turns</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --bg:#0b0714;
+  --panel:#1c1330;
+  --panel2:#241a3d;
+  --panel-solid:#1f1533;
+  --gold:#ffc94a;
+  --red:#ff3d5a;
+  --blue:#3ab0ff;
+  --text:#f2eefc;
+  --muted:#a99bc9;
+  --border:#382a54;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  background:radial-gradient(circle at 20% 0%, #241a3d 0%, var(--bg) 55%);
+  color:var(--text);
+  min-height:100vh;
+}
+.stage-glow{
+  position:fixed;
+  top:-200px;left:50%;
+  transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse at center, rgba(255,201,74,0.15) 0%, rgba(255,201,74,0) 70%);
+  pointer-events:none;
+  z-index:0;
+}
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:32px 20px 60px;
+  position:relative;
+  z-index:1;
+}
+header.hero{
+  text-align:center;
+  padding:20px 10px 30px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:26px;
+}
+.mic-icon{ width:54px;height:54px; margin:0 auto 14px; display:block; }
+.eyebrow{ letter-spacing:3px; font-size:12px; color:var(--gold); text-transform:uppercase; font-weight:700; margin-bottom:10px; }
+h1{
+  font-size:clamp(24px,4vw,38px);
+  line-height:1.15;
+  margin:0 0 14px;
+  font-weight:800;
+  background:linear-gradient(90deg,#ffc94a,#ff8a5c,#ff3d5a);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.subhead{ color:var(--muted); font-size:15px; max-width:640px; margin:0 auto; line-height:1.55; }
+.switch-row{ display:flex; justify-content:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.switch-btn{
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:12px 22px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:0.4px;
+  cursor:pointer;
+  transition:all .25s ease;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.switch-btn svg{width:16px;height:16px;opacity:.7;}
+.switch-btn.active{
+  background:linear-gradient(90deg,#ff8a5c,#ff3d5a);
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 6px 18px rgba(255,61,90,0.35);
+}
+.switch-btn.active svg{opacity:1;}
+.switch-btn:not(.active):hover{ border-color:var(--gold); color:var(--text); }
+
+.instruction-line{
+  text-align:center;
+  font-size:12.5px;
+  color:var(--muted);
+  margin-bottom:18px;
+}
+.instruction-line .tag-gold{ color:var(--gold); font-weight:700; }
+
+.search-box{ position:relative; margin:0 auto 22px; max-width:480px; }
+.search-box input{
+  width:100%;
+  padding:13px 44px 13px 16px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  font-size:14px;
+  outline:none;
+  transition:border-color .2s;
+}
+.search-box input:focus{border-color:var(--gold);}
+.search-box .icon{ position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+.search-result{ text-align:center; font-size:13px; color:var(--gold); min-height:18px; margin-bottom:14px; }
+
+.panel{
+  background:linear-gradient(180deg,var(--panel) 0%, var(--panel2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,0.35);
+}
+.panel-head{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  background:var(--panel-solid);
+}
+.panel-title{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.table-scroll{
+  overflow-x:auto;
+  max-height:640px;
+  overflow-y:auto;
+  position:relative;
+}
+table{ width:100%; border-collapse:collapse; font-size:13.5px; table-layout:fixed; }
+thead th{
+  text-align:left;
+  padding:12px 10px;
+  color:var(--muted);
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.4px;
+  text-transform:uppercase;
+  background:#1a1230;
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:5;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 1px 0 var(--border);
+  overflow-wrap:break-word;
+}
+thead th:hover{color:var(--text);}
+tbody tr{
+  border-bottom:1px solid rgba(56,42,84,0.5);
+  transition:background .15s;
+  cursor:default;
+  position:relative;
+}
+tbody tr:hover{ background:rgba(255,201,74,0.06); }
+tbody td{ padding:11px 10px; color:var(--text); vertical-align:middle; overflow-wrap:break-word; }
+.rank-cell{ font-weight:800; font-size:14px; color:var(--muted); width:48px; }
+.tie-tag{ font-size:9.5px; color:var(--gold); font-weight:700; margin-left:2px; letter-spacing:0.3px; display:inline-block; }
+.chair-badge{ display:inline-flex; align-items:center; gap:5px; font-weight:800; color:var(--gold); white-space:nowrap; }
+.chair-badge svg{width:13px;height:13px;flex-shrink:0;}
+.top5 td{ background:linear-gradient(90deg, rgba(255,201,74,0.10), rgba(255,61,90,0.04)); }
+.top5 .rank-cell{ color:var(--gold); }
+.top5-medal{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;height:24px;
+  border-radius:50%;
+  font-size:11px;
+  font-weight:800;
+  color:#1a1128;
+  background:linear-gradient(135deg,#ffe08a,#ffb347);
+  margin-right:2px;
+}
+.song-name{font-weight:700;}
+.footer-note{ text-align:center; color:var(--muted); font-size:12px; margin-top:10px; padding:0 16px; }
+.brand-bar{
+  margin-top:36px;
+  padding-top:22px;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.brand-bar .stage-lights{ display:flex; gap:5px; }
+.brand-bar .dot{ width:6px;height:6px;border-radius:50%; background:var(--gold); opacity:.6; }
+.brand-name{ font-weight:800; font-size:15px; letter-spacing:0.5px; color:#ffffff; }
+.no-results{ text-align:center; padding:40px 20px; color:var(--muted); }
+
+/* Column widths so everything fits without side-scroll on desktop */
+.col-rank{ width:7%; }
+.col-song{ width:32%; }
+.col-artist{ width:32%; }
+.col-turns{ width:16%; }
+.col-perf{ width:13%; }
+.col-artist-only{ width:52%; }
+.col-turns-only{ width:24%; }
+.col-perf-only{ width:24%; }
+
+@media (max-width:640px){
+  .panel-head{flex-direction:column;align-items:flex-start;}
+  thead th, tbody td{padding:8px 6px;font-size:12px;}
+  .rank-cell{width:32px;}
+  table{ table-layout:auto; }
+}
+::-webkit-scrollbar{height:8px;width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="stage-glow"></div>
+<div class="wrap">
+  <header class="hero">
+    <svg class="mic-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 15a4 4 0 004-4V6a4 4 0 10-8 0v5a4 4 0 004 4z" stroke="#ffc94a" stroke-width="1.6"/>
+      <path d="M19 11a7 7 0 01-14 0" stroke="#ff3d5a" stroke-width="1.6"/>
+      <path d="M12 18v3M9 21h6" stroke="#3ab0ff" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div class="eyebrow">The Voice &bull; Seasons 1&ndash;29 (2011&ndash;2026)</div>
+    <h1>Songs & Artists With the Most Chair Turns</h1>
+    <div class="subhead">Analyzing 1,193 unique songs across 1,700+ blind audition performances on The Voice (US), we ranked which songs and original artists have turned the most chairs in the show&rsquo;s history.</div>
+  </header>
+
+  <div class="switch-row">
+    <button class="switch-btn active" data-view="songs">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+      Songs
+    </button>
+    <button class="switch-btn" data-view="artists">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a4 4 0 004-4V6a4 4 0 10-8 0v5a4 4 0 004 4z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0" stroke="currentColor" stroke-width="1.8"/></svg>
+      Artists
+    </button>
+  </div>
+
+  <div class="instruction-line">Showing the <span class="tag-gold">Top 100</span> &mdash; click a column header to sort</div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search songs or artists...">
+    <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </div>
+  <div class="search-result" id="searchResult"></div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title" id="panelTitle">Songs With The Most Chair Turns</div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr id="headRow"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer-note">Data reflects blind audition performances, Seasons 1&ndash;29 (2011&ndash;2026). Songs with the same chair-turn total share a rank (TIE).</div>
+
+  <div class="brand-bar">
+    <div class="stage-lights"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="brand-name">ActionNetwork.com</div>
+    <div class="stage-lights"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  </div>
+</div>
+
+<script>
+const SONGS = [{"song_display": "Dream a Little Dream of Me", "artist": "N/A", "total_chair_turns": 15, "total_performances": 5, "rank": 1, "is_tie": false}, {"song_display": "A Song for You", "artist": "Leon Russell", "total_chair_turns": 13, "total_performances": 4, "rank": 2, "is_tie": true}, {"song_display": "Gravity", "artist": "John Mayer", "total_chair_turns": 13, "total_performances": 4, "rank": 2, "is_tie": true}, {"song_display": "Angel from Montgomery", "artist": "John Prine", "total_chair_turns": 12, "total_performances": 3, "rank": 4, "is_tie": true}, {"song_display": "Here for the Party", "artist": "Gretchen Wilson", "total_chair_turns": 12, "total_performances": 4, "rank": 4, "is_tie": true}, {"song_display": "Don't Think Twice, It's All Right", "artist": "Bob Dylan", "total_chair_turns": 11, "total_performances": 5, "rank": 6, "is_tie": true}, {"song_display": "Jealous", "artist": "Labrinth", "total_chair_turns": 11, "total_performances": 3, "rank": 6, "is_tie": true}, {"song_display": "All I Want", "artist": "Kodaline", "total_chair_turns": 10, "total_performances": 3, "rank": 8, "is_tie": true}, {"song_display": "Can't Find My Way Home", "artist": "Blind Faith", "total_chair_turns": 10, "total_performances": 3, "rank": 8, "is_tie": true}, {"song_display": "Dancing on My Own", "artist": "Robyn", "total_chair_turns": 10, "total_performances": 4, "rank": 8, "is_tie": true}, {"song_display": "Dreams", "artist": "Fleetwood Mac", "total_chair_turns": 10, "total_performances": 4, "rank": 8, "is_tie": true}, {"song_display": "Lay Me Down", "artist": "Sam Smith", "total_chair_turns": 10, "total_performances": 5, "rank": 8, "is_tie": true}, {"song_display": "River", "artist": "Leon Bridges", "total_chair_turns": 10, "total_performances": 4, "rank": 8, "is_tie": true}, {"song_display": "You Are My Sunshine", "artist": "Jimmie Davis & Charles Mitchell's Orchestra", "total_chair_turns": 10, "total_performances": 3, "rank": 8, "is_tie": true}, {"song_display": "Best Part", "artist": "Daniel Caesar & H.E.R.", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "Bless the Broken Road", "artist": "Nitty Gritty Dirt Band", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "Call Out My Name", "artist": "The Weeknd", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "Idontwannabeyouanymore", "artist": "Billie Eilish", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "If I Ain't Got You", "artist": "Alicia Keys", "total_chair_turns": 9, "total_performances": 4, "rank": 15, "is_tie": true}, {"song_display": "Skinny Love", "artist": "Bon Iver", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "Stand by Me", "artist": "Ben E. King", "total_chair_turns": 9, "total_performances": 4, "rank": 15, "is_tie": true}, {"song_display": "Stay With Me", "artist": "Sam Smith", "total_chair_turns": 9, "total_performances": 4, "rank": 15, "is_tie": true}, {"song_display": "What's Going On", "artist": "Marvin Gaye", "total_chair_turns": 9, "total_performances": 5, "rank": 15, "is_tie": true}, {"song_display": "When I Was Your Man", "artist": "Bruno Mars", "total_chair_turns": 9, "total_performances": 3, "rank": 15, "is_tie": true}, {"song_display": "A Change Is Gonna Come", "artist": "Sam Cooke", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Beneath Your Beautiful", "artist": "Labrinth & Emeli Sand\u00e9", "total_chair_turns": 8, "total_performances": 5, "rank": 25, "is_tie": true}, {"song_display": "Cuz I Love You", "artist": "Lizzo", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Don't Close Your Eyes", "artist": "Keith Whitley", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "Falling", "artist": "Harry Styles", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "Goodbye Yellow Brick Road", "artist": "Elton John", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Hallelujah", "artist": "Leonard Cohen", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Heartbreak Anniversary", "artist": "Giveon", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Issues", "artist": "Julia Michaels", "total_chair_turns": 8, "total_performances": 4, "rank": 25, "is_tie": true}, {"song_display": "Landslide", "artist": "Fleetwood Mac", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "Light On", "artist": "Maggie Rogers", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "Lights", "artist": "Journey", "total_chair_turns": 8, "total_performances": 2, "rank": 25, "is_tie": true}, {"song_display": "Mr. Know It All", "artist": "Kelly Clarkson", "total_chair_turns": 8, "total_performances": 4, "rank": 25, "is_tie": true}, {"song_display": "Pride and Joy", "artist": "Stevie Ray Vaughan and Double Trouble", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "Redbone", "artist": "Childish Gambino", "total_chair_turns": 8, "total_performances": 5, "rank": 25, "is_tie": true}, {"song_display": "Sex and Candy", "artist": "Marcy Playground", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "She Talks to Angels", "artist": "The Black Crowes", "total_chair_turns": 8, "total_performances": 4, "rank": 25, "is_tie": true}, {"song_display": "Stars", "artist": "Grace Potter & The Nocturnals", "total_chair_turns": 8, "total_performances": 4, "rank": 25, "is_tie": true}, {"song_display": "The Scientist", "artist": "Coldplay", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "The Thrill Is Gone", "artist": "B.B. King", "total_chair_turns": 8, "total_performances": 3, "rank": 25, "is_tie": true}, {"song_display": "American Girl", "artist": "Tom Petty and the Heartbreakers", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "Blue Ain't Your Color", "artist": "Keith Urban", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "I Say a Little Prayer", "artist": "Dionne Warwick", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Isn't She Lovely", "artist": "Stevie Wonder", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "Knockin' on Heaven's Door", "artist": "Bob Dylan", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Losing My Religion", "artist": "R.E.M.", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "One of Us", "artist": "Joan Osborne", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Rainbow", "artist": "Kacey Musgraves", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Something in the Orange", "artist": "Zach Bryan", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "Sunday Morning", "artist": "Maroon 5", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Tennessee Whiskey", "artist": "David Allan Coe", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "The A Team", "artist": "Ed Sheeran", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "To Love Somebody", "artist": "Bee Gees", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "traitor", "artist": "Olivia Rodrigo", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "Trouble", "artist": "Ray LaMontagne", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "U Got It Bad", "artist": "Usher", "total_chair_turns": 7, "total_performances": 5, "rank": 45, "is_tie": true}, {"song_display": "Use Me", "artist": "Bill Withers", "total_chair_turns": 7, "total_performances": 3, "rank": 45, "is_tie": true}, {"song_display": "Wild World", "artist": "Cat Stevens", "total_chair_turns": 7, "total_performances": 2, "rank": 45, "is_tie": true}, {"song_display": "A Thousand Years", "artist": "Christina Perri", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "American Boy", "artist": "Estelle & Kanye West", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Back to Black", "artist": "Amy Winehouse", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Big White Room", "artist": "Jessie J", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "Blackbird", "artist": "The Beatles", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Boo'd Up", "artist": "Ella Mai", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Can't Help Falling in Love", "artist": "Elvis Presley", "total_chair_turns": 6, "total_performances": 4, "rank": 63, "is_tie": true}, {"song_display": "Chain of Fools", "artist": "Aretha Franklin", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "Como La Flor", "artist": "Selena", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Dreaming with a Broken Heart", "artist": "John Mayer", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Drivers License", "artist": "Olivia Rodrigo", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Easy on Me", "artist": "Adele", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "Electric Feel", "artist": "MGMT", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Feeling Good", "artist": "N/A", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "Folsom Prison Blues", "artist": "Johnny Cash", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Ghost", "artist": "Justin Bieber", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Girl from the North Country", "artist": "Bob Dylan", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Have a Little Faith in Me", "artist": "John Hiatt", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "I Can't Make You Love Me", "artist": "Bonnie Raitt", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "I Got You (I Feel Good)", "artist": "James Brown & The Famous Flames", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "I Put a Spell on You", "artist": "Screamin' Jay Hawkins", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Just the Two of Us", "artist": "Grover Washington Jr. & Bill Withers", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Make You Feel My Love", "artist": "Bob Dylan", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "New York State of Mind", "artist": "Billy Joel", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Ordinary World", "artist": "Duran Duran", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Pillowtalk", "artist": "Zayn", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "POV", "artist": "Ariana Grande", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Ring of Fire", "artist": "Johnny Cash", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "River", "artist": "Bishop Briggs", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "The House of the Rising Sun", "artist": "The Animals", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "The Night We Met", "artist": "Lord Huron", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Tiny Dancer", "artist": "Elton John", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Too Good At Goodbyes", "artist": "Sam Smith", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Try a Little Tenderness", "artist": "Ray Noble Orchestra", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Unconditionally", "artist": "Katy Perry", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "When the Party's Over", "artist": "Billie Eilish", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}, {"song_display": "Wicked Game", "artist": "Chris Isaak", "total_chair_turns": 6, "total_performances": 3, "rank": 63, "is_tie": true}, {"song_display": "Zombie", "artist": "The Cranberries", "total_chair_turns": 6, "total_performances": 2, "rank": 63, "is_tie": true}];
+const ARTISTS = [{"artist": "Adele", "total_chair_turns": 39, "total_performances": 26, "rank": 1, "is_tie": true}, {"artist": "Bruno Mars", "total_chair_turns": 39, "total_performances": 19, "rank": 1, "is_tie": true}, {"artist": "Sam Smith", "total_chair_turns": 39, "total_performances": 20, "rank": 1, "is_tie": true}, {"artist": "Bob Dylan", "total_chair_turns": 38, "total_performances": 16, "rank": 4, "is_tie": false}, {"artist": "Fleetwood Mac", "total_chair_turns": 33, "total_performances": 17, "rank": 5, "is_tie": false}, {"artist": "Ed Sheeran", "total_chair_turns": 32, "total_performances": 21, "rank": 6, "is_tie": false}, {"artist": "Kelly Clarkson", "total_chair_turns": 29, "total_performances": 16, "rank": 7, "is_tie": false}, {"artist": "Taylor Swift", "total_chair_turns": 28, "total_performances": 18, "rank": 8, "is_tie": false}, {"artist": "Elton John", "total_chair_turns": 27, "total_performances": 11, "rank": 9, "is_tie": true}, {"artist": "The Beatles", "total_chair_turns": 27, "total_performances": 12, "rank": 9, "is_tie": true}, {"artist": "Aretha Franklin", "total_chair_turns": 26, "total_performances": 13, "rank": 11, "is_tie": true}, {"artist": "Stevie Wonder", "total_chair_turns": 26, "total_performances": 17, "rank": 11, "is_tie": true}, {"artist": "Ariana Grande", "total_chair_turns": 23, "total_performances": 12, "rank": 13, "is_tie": true}, {"artist": "John Mayer", "total_chair_turns": 23, "total_performances": 10, "rank": 13, "is_tie": true}, {"artist": "Billie Eilish", "total_chair_turns": 22, "total_performances": 10, "rank": 15, "is_tie": false}, {"artist": "Harry Styles", "total_chair_turns": 21, "total_performances": 8, "rank": 16, "is_tie": false}, {"artist": "Alicia Keys", "total_chair_turns": 20, "total_performances": 8, "rank": 17, "is_tie": true}, {"artist": "Katy Perry", "total_chair_turns": 20, "total_performances": 17, "rank": 17, "is_tie": true}, {"artist": "Labrinth", "total_chair_turns": 19, "total_performances": 8, "rank": 19, "is_tie": true}, {"artist": "Usher", "total_chair_turns": 19, "total_performances": 10, "rank": 19, "is_tie": true}, {"artist": "Marvin Gaye", "total_chair_turns": 18, "total_performances": 9, "rank": 21, "is_tie": true}, {"artist": "Pink", "total_chair_turns": 18, "total_performances": 10, "rank": 21, "is_tie": true}, {"artist": "Demi Lovato", "total_chair_turns": 17, "total_performances": 14, "rank": 23, "is_tie": true}, {"artist": "Jessie J", "total_chair_turns": 17, "total_performances": 7, "rank": 23, "is_tie": true}, {"artist": "Olivia Rodrigo", "total_chair_turns": 17, "total_performances": 6, "rank": 23, "is_tie": true}, {"artist": "The Weeknd", "total_chair_turns": 17, "total_performances": 10, "rank": 23, "is_tie": true}, {"artist": "Bill Withers", "total_chair_turns": 16, "total_performances": 9, "rank": 27, "is_tie": true}, {"artist": "Journey", "total_chair_turns": 16, "total_performances": 5, "rank": 27, "is_tie": true}, {"artist": "Kacey Musgraves", "total_chair_turns": 16, "total_performances": 8, "rank": 27, "is_tie": true}, {"artist": "Meghan Trainor", "total_chair_turns": 16, "total_performances": 6, "rank": 27, "is_tie": true}, {"artist": "Beyonc\u00e9", "total_chair_turns": 15, "total_performances": 13, "rank": 31, "is_tie": true}, {"artist": "Coldplay", "total_chair_turns": 15, "total_performances": 5, "rank": 31, "is_tie": true}, {"artist": "Daniel Caesar", "total_chair_turns": 15, "total_performances": 6, "rank": 31, "is_tie": true}, {"artist": "Drake", "total_chair_turns": 15, "total_performances": 7, "rank": 31, "is_tie": true}, {"artist": "Gretchen Wilson", "total_chair_turns": 15, "total_performances": 5, "rank": 31, "is_tie": true}, {"artist": "Keith Urban", "total_chair_turns": 15, "total_performances": 7, "rank": 31, "is_tie": true}, {"artist": "Rihanna", "total_chair_turns": 15, "total_performances": 10, "rank": 31, "is_tie": true}, {"artist": "H.E.R.", "total_chair_turns": 14, "total_performances": 7, "rank": 38, "is_tie": true}, {"artist": "Maggie Rogers", "total_chair_turns": 14, "total_performances": 5, "rank": 38, "is_tie": true}, {"artist": "Maroon 5", "total_chair_turns": 14, "total_performances": 7, "rank": 38, "is_tie": true}, {"artist": "Whitney Houston", "total_chair_turns": 14, "total_performances": 9, "rank": 38, "is_tie": true}, {"artist": "Christina Aguilera", "total_chair_turns": 13, "total_performances": 5, "rank": 42, "is_tie": true}, {"artist": "Keith Whitley", "total_chair_turns": 13, "total_performances": 6, "rank": 42, "is_tie": true}, {"artist": "Lady Gaga", "total_chair_turns": 13, "total_performances": 13, "rank": 42, "is_tie": true}, {"artist": "Leon Russell", "total_chair_turns": 13, "total_performances": 4, "rank": 42, "is_tie": true}, {"artist": "Sam Cooke", "total_chair_turns": 13, "total_performances": 6, "rank": 42, "is_tie": true}, {"artist": "Shawn Mendes", "total_chair_turns": 13, "total_performances": 6, "rank": 42, "is_tie": true}, {"artist": "Al Green", "total_chair_turns": 12, "total_performances": 11, "rank": 48, "is_tie": true}, {"artist": "Carrie Underwood", "total_chair_turns": 12, "total_performances": 10, "rank": 48, "is_tie": true}, {"artist": "Cyndi Lauper", "total_chair_turns": 12, "total_performances": 4, "rank": 48, "is_tie": true}, {"artist": "John Prine", "total_chair_turns": 12, "total_performances": 3, "rank": 48, "is_tie": true}, {"artist": "Johnny Cash", "total_chair_turns": 12, "total_performances": 5, "rank": 48, "is_tie": true}, {"artist": "Justin Bieber", "total_chair_turns": 12, "total_performances": 10, "rank": 48, "is_tie": true}, {"artist": "Luke Combs", "total_chair_turns": 12, "total_performances": 6, "rank": 48, "is_tie": true}, {"artist": "OneRepublic", "total_chair_turns": 12, "total_performances": 6, "rank": 48, "is_tie": true}, {"artist": "Ray LaMontagne", "total_chair_turns": 12, "total_performances": 6, "rank": 48, "is_tie": true}, {"artist": "Train", "total_chair_turns": 12, "total_performances": 10, "rank": 48, "is_tie": true}, {"artist": "Amy Winehouse", "total_chair_turns": 11, "total_performances": 5, "rank": 58, "is_tie": true}, {"artist": "Bob Marley and the Wailers", "total_chair_turns": 11, "total_performances": 8, "rank": 58, "is_tie": true}, {"artist": "Dixie Chicks", "total_chair_turns": 11, "total_performances": 5, "rank": 58, "is_tie": true}, {"artist": "John Legend", "total_chair_turns": 11, "total_performances": 6, "rank": 58, "is_tie": true}, {"artist": "Joni Mitchell", "total_chair_turns": 11, "total_performances": 5, "rank": 58, "is_tie": true}, {"artist": "Lewis Capaldi", "total_chair_turns": 11, "total_performances": 5, "rank": 58, "is_tie": true}, {"artist": "The Temptations", "total_chair_turns": 11, "total_performances": 5, "rank": 58, "is_tie": true}, {"artist": "Billy Joel", "total_chair_turns": 10, "total_performances": 4, "rank": 65, "is_tie": true}, {"artist": "Blind Faith", "total_chair_turns": 10, "total_performances": 3, "rank": 65, "is_tie": true}, {"artist": "Charles Mitchell's Orchestra", "total_chair_turns": 10, "total_performances": 3, "rank": 65, "is_tie": true}, {"artist": "David Guetta", "total_chair_turns": 10, "total_performances": 6, "rank": 65, "is_tie": true}, {"artist": "Emeli Sand\u00e9", "total_chair_turns": 10, "total_performances": 6, "rank": 65, "is_tie": true}, {"artist": "Giveon", "total_chair_turns": 10, "total_performances": 3, "rank": 65, "is_tie": true}, {"artist": "Heart", "total_chair_turns": 10, "total_performances": 3, "rank": 65, "is_tie": true}, {"artist": "Julia Michaels", "total_chair_turns": 10, "total_performances": 7, "rank": 65, "is_tie": true}, {"artist": "Kodaline", "total_chair_turns": 10, "total_performances": 3, "rank": 65, "is_tie": true}, {"artist": "Leon Bridges", "total_chair_turns": 10, "total_performances": 5, "rank": 65, "is_tie": true}, {"artist": "Robyn", "total_chair_turns": 10, "total_performances": 4, "rank": 65, "is_tie": true}, {"artist": "Selena", "total_chair_turns": 10, "total_performances": 5, "rank": 65, "is_tie": true}, {"artist": "Ben E. King", "total_chair_turns": 9, "total_performances": 4, "rank": 77, "is_tie": true}, {"artist": "Bon Iver", "total_chair_turns": 9, "total_performances": 3, "rank": 77, "is_tie": true}, {"artist": "Elvis Presley", "total_chair_turns": 9, "total_performances": 9, "rank": 77, "is_tie": true}, {"artist": "Kanye West", "total_chair_turns": 9, "total_performances": 5, "rank": 77, "is_tie": true}, {"artist": "Michael Bubl\u00e9", "total_chair_turns": 9, "total_performances": 6, "rank": 77, "is_tie": true}, {"artist": "Nitty Gritty Dirt Band", "total_chair_turns": 9, "total_performances": 4, "rank": 77, "is_tie": true}, {"artist": "Patsy Montana", "total_chair_turns": 9, "total_performances": 3, "rank": 77, "is_tie": true}, {"artist": "Sia", "total_chair_turns": 9, "total_performances": 7, "rank": 77, "is_tie": true}, {"artist": "Tom Petty and the Heartbreakers", "total_chair_turns": 9, "total_performances": 6, "rank": 77, "is_tie": true}, {"artist": "Zac Brown Band", "total_chair_turns": 9, "total_performances": 8, "rank": 77, "is_tie": true}, {"artist": "B.B. King", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Bee Gees", "total_chair_turns": 8, "total_performances": 4, "rank": 87, "is_tie": true}, {"artist": "Childish Gambino", "total_chair_turns": 8, "total_performances": 5, "rank": 87, "is_tie": true}, {"artist": "Christina Perri", "total_chair_turns": 8, "total_performances": 4, "rank": 87, "is_tie": true}, {"artist": "Foreigner", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Grace Potter", "total_chair_turns": 8, "total_performances": 4, "rank": 87, "is_tie": true}, {"artist": "Leonard Cohen", "total_chair_turns": 8, "total_performances": 2, "rank": 87, "is_tie": true}, {"artist": "Lizzo", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Loretta Lynn", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Marcy Playground", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Michael Jackson", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "Miley Cyrus", "total_chair_turns": 8, "total_performances": 6, "rank": 87, "is_tie": true}, {"artist": "Stevie Ray Vaughan and Double Trouble", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}, {"artist": "The Black Crowes", "total_chair_turns": 8, "total_performances": 5, "rank": 87, "is_tie": true}, {"artist": "The Nocturnals", "total_chair_turns": 8, "total_performances": 4, "rank": 87, "is_tie": true}, {"artist": "Toni Braxton", "total_chair_turns": 8, "total_performances": 3, "rank": 87, "is_tie": true}];
+
+let currentView = 'songs';
+let sortKey = 'rank';
+let sortDir = 1;
+
+const VIEW_LABELS = {
+  songs: 'Songs With The Most Chair Turns',
+  artists: 'Artists With The Most Chair Turns'
+};
+
+function safeLower(v){
+  return (v === null || v === undefined) ? '' : String(v).toLowerCase();
+}
+
+function buildRows(data, view){
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  if(data.length === 0){
+    const colCount = view === 'songs' ? 5 : 4;
+    tbody.innerHTML = `<tr><td colspan="${colCount}" class="no-results">No matches found. Try a different search.</td></tr>`;
+    return;
+  }
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    const isTop5 = row.rank <= 5;
+    if(isTop5) tr.classList.add('top5');
+    const tieText = row.is_tie ? ' <span class="tie-tag">(TIE)</span>' : '';
+    const medal = isTop5 ? `<span class="top5-medal">${row.rank}</span>` : row.rank;
+
+    if(view === 'songs'){
+      tr.innerHTML = `
+        <td class="rank-cell col-rank">${medal}${tieText}</td>
+        <td class="col-song"><span class="song-name">${row.song_display}</span></td>
+        <td class="col-artist">${row.artist}</td>
+        <td class="col-turns"><span class="chair-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M6 20l1-8h10l1 8M8 12V6a4 4 0 018 0v6" stroke="#ffc94a" stroke-width="1.8"/></svg>${row.total_chair_turns}</span></td>
+        <td class="col-perf">${row.total_performances}</td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td class="rank-cell col-rank">${medal}${tieText}</td>
+        <td class="col-artist-only"><span class="song-name">${row.artist}</span></td>
+        <td class="col-turns-only"><span class="chair-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M6 20l1-8h10l1 8M8 12V6a4 4 0 018 0v6" stroke="#ffc94a" stroke-width="1.8"/></svg>${row.total_chair_turns}</span></td>
+        <td class="col-perf-only">${row.total_performances}</td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+function buildHead(view){
+  const headRow = document.getElementById('headRow');
+  if(view === 'songs'){
+    headRow.innerHTML = `
+      <th class="col-rank" data-key="rank">Rank</th>
+      <th class="col-song" data-key="song_display">Song</th>
+      <th class="col-artist" data-key="artist">Original Artist</th>
+      <th class="col-turns" data-key="total_chair_turns">Chair Turns</th>
+      <th class="col-perf" data-key="total_performances">Performances</th>
+    `;
+  } else {
+    headRow.innerHTML = `
+      <th class="col-rank" data-key="rank">Rank</th>
+      <th class="col-artist-only" data-key="artist">Artist</th>
+      <th class="col-turns-only" data-key="total_chair_turns">Chair Turns</th>
+      <th class="col-perf-only" data-key="total_performances">Performances</th>
+    `;
+  }
+  headRow.querySelectorAll('th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.getAttribute('data-key');
+      if(sortKey === key){ sortDir *= -1; } else { sortKey = key; sortDir = (key==='rank')?1:-1; }
+      render();
+    });
+  });
+}
+
+function getData(){ return currentView === 'songs' ? SONGS : ARTISTS; }
+
+function render(){
+  const view = currentView;
+  buildHead(view);
+  let data = getData().slice();
+  data.sort((a,b) => {
+    let va = a[sortKey], vb = b[sortKey];
+    if(typeof va === 'string'){ va = va.toLowerCase(); vb = (vb || '').toLowerCase(); return va.localeCompare(vb) * sortDir; }
+    return (va - vb) * sortDir;
+  });
+  const searchTerm = safeLower(document.getElementById('searchInput').value.trim());
+  if(searchTerm){
+    data = data.filter(row => {
+      if(view === 'songs'){
+        return safeLower(row.song_display).includes(searchTerm) || safeLower(row.artist).includes(searchTerm);
+      } else {
+        return safeLower(row.artist).includes(searchTerm);
+      }
+    });
+  }
+  buildRows(data, view);
+  document.getElementById('panelTitle').textContent = VIEW_LABELS[view];
+
+  const resultEl = document.getElementById('searchResult');
+  if(searchTerm){
+    if(data.length > 0){
+      const top = data[0];
+      const label = view === 'songs' ? `"${top.song_display}" by ${top.artist}` : `"${top.artist}"`;
+      const tie = top.is_tie ? ' (TIE)' : '';
+      resultEl.textContent = `${label}: Ranked #${top.rank}${tie} with ${top.total_chair_turns} total chair turns.`;
+    } else {
+      resultEl.textContent = 'No matches found.';
+    }
+  } else {
+    resultEl.textContent = '';
+  }
+}
+
+document.querySelectorAll('.switch-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.getAttribute('data-view');
+    sortKey = 'rank'; sortDir = 1;
+    render();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', render);
+
+render();
+</script>
+</body>
+</html>
